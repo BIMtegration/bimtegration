@@ -1,0 +1,15 @@
+body {
+  background-color: #000000;
+  overflow: hidden;
+}
+
+.grid {
+  display: flex;
+}
+
+.tablero {
+  width: 1px;
+  height: 1px;
+  margin: 50px;
+  transform: scale(10);
+}

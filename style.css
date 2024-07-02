@@ -1,15 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&display=swap");
 body {
   background-color: #000000;
-  overflow: hidden;
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .grid {
   display: flex;
+  flex-flow: column nowrap;
+  align-items: baseline;
+  gap: 50px;
 }
 
 .tablero {
   width: 1px;
   height: 1px;
-  margin: 50px;
+  margin: 40px;
   transform: scale(10);
+}
+.links {
+  align-self: center;
 }

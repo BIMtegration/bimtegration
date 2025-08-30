@@ -361,12 +361,15 @@
 
         letras.forEach(letra => {
             letra.addEventListener('click', () => {
-                codigoActual += letra.dataset.letra;
+                // ▼▼▼ ¡AQUÍ ESTÁ EL CAMBIO! ▼▼▼
+                // Convierte la letra a mayúscula para que coincida con 'MAGIC'
+                codigoActual += letra.dataset.letra.toUpperCase();
+                
                 if (!codigoSecreto.startsWith(codigoActual)) {
                     codigoActual = '';
                 }
                 if (codigoActual === codigoSecreto) {
-                    // 2. Cuando se escribe MAGIC, llamamos a la función para conectar.
+                    // Cuando se escribe MAGIC, llamamos a la función para conectar.
                     if (!socket || socket.readyState === WebSocket.CLOSED) {
                         conectarAlServidor();
                     }
@@ -421,7 +424,7 @@
             };
 
             socket.onerror = () => {
-                 alert('No se pudo conectar con el servidor de asistencia.');
+                alert('No se pudo conectar con el servidor de asistencia.');
             };
         }
 

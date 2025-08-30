@@ -174,6 +174,171 @@
                 font-size: 15px;
             }
         }
+        /* --- Estilos del Teclado y Chat de Asistencia --- */
+        @import url('https://fonts.googleapis.com/css2?family=Acme&display=swap');
+
+        .titulo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(40, 40, 40, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .item-letra {
+            font-family: "Acme", sans-serif;
+            color: #FFFFFF;
+            border-radius: 12px;
+            width: 65px;
+            height: 75px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 3px;
+            font-size: 1.9em;
+            font-weight: bold;
+            background: linear-gradient(145deg, #4A90E2, #357ABD);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .item-letra:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        /* --- Estilos del Modal del Chat --- */
+        .magic-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(145deg, #2C3E50, #34495E);
+            border: 2px solid #3498DB;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 90vw;
+            max-width: 700px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .magic-modal.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .magic-modal h2 {
+            color: #FFFFFF;
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 1.8em;
+        }
+            
+        .chat-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .chat-persona {
+            width: 48%;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .chat-persona h3 {
+            margin-top: 0;
+            color: #bdc3c7;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .mensaje-display {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            height: 100px;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            overflow-wrap: break-word;
+            font-size: 1.1em;
+            border: 1px solid #4a6fa2;
+        }
+
+        .input-area {
+            display: flex;
+        }
+
+        .input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            background-color: #ecf0f1;
+            color: #333;
+        }
+            
+        .input-area button {
+            padding: 10px 15px;
+            border-radius: 0 5px 5px 0;
+            border: none;
+            background-color: #3498DB;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-area button:hover {
+            background-color: #5DADE2;
+        }
+
+        .btn-cerrar {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #E74C3C;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-cerrar:hover {
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
     </style>
 </head>
@@ -182,18 +347,43 @@
     <main class="portal-container">
         
         <div class="titulo-container">
-            <div class="item-letra">B</div>
-            <div class="item-letra">I</div>
-            <div class="item-letra">M</div>
-            <div class="item-letra">t</div>
-            <div class="item-letra">e</div>
-            <div class="item-letra">g</div>
-            <div class="item-letra">r</div>
-            <div class="item-letra">a</div>
-            <div class="item-letra">c</div>
-            <div class="item-letra">i</div>
-            <div class="item-letra">o</div>
-            <div class="item-letra">n</div>
+            <div class="item-letra" data-letra="B">B</div>
+            <div class="item-letra" data-letra="I">I</div>
+            <div class="item-letra" data-letra="M">M</div>
+            <div class="item-letra" data-letra="T">t</div>
+            <div class="item-letra" data-letra="E">e</div>
+            <div class="item-letra" data-letra="G">g</div>
+            <div class="item-letra" data-letra="R">r</div>
+            <div class="item-letra" data-letra="A">a</div>
+            <div class="item-letra" data-letra="C">c</div>
+            <div class="item-letra" data-letra="I">i</div>
+            <div class="item-letra" data-letra="O">o</div>
+            <div class="item-letra" data-letra="N">n</div>
+        </div>
+
+        <div class="overlay" id="overlayMagic" onclick="cerrarChat()"></div>
+        <div class="magic-modal" id="magicModal">
+            <button class="btn-cerrar" onclick="cerrarChat()">×</button>
+            <h2>Asistencia Técnica</h2>
+            
+            <div class="chat-container">
+                <div class="chat-persona">
+                    <h3>Persona 1</h3>
+                    <div class="mensaje-display" id="mensajePersona1">...</div>
+                    <div class="input-area">
+                        <input type="text" id="inputPersona1" placeholder="Escribe tu mensaje..." onkeydown="if(event.key==='Enter') enviarMensaje(1)">
+                        <button id="btnEnviar1" onclick="enviarMensaje(1)">➤</button>
+                    </div>
+                </div>
+                <div class="chat-persona">
+                    <h3>Persona 2</h3>
+                    <div class="mensaje-display" id="mensajePersona2">...</div>
+                    <div class="input-area">
+                        <input type="text" id="inputPersona2" placeholder="Escribe tu mensaje..." onkeydown="if(event.key==='Enter') enviarMensaje(2)">
+                        <button id="btnEnviar2" onclick="enviarMensaje(2)">➤</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <p class="descripcion">
@@ -213,15 +403,90 @@
     </main>
 
     <script>
-        // Pequeño script para animar las letras del logo al cargar
-        document.addEventListener('DOMContentLoaded', () => {
-            const letras = document.querySelectorAll('.item-letra');
-            letras.forEach((letra, index) => {
-                // Asigna un retraso escalonado a la animación de cada letra
-                letra.style.animationDelay = `${index * 0.05}s`;
+        // --- LÓGICA DEL TECLADO ---
+        let codigoActual = '';
+        const letras = document.querySelectorAll('.item-letra');
+        const codigoSecreto = 'MAGIC';
+        const chatModal = document.getElementById('magicModal');
+        const overlay = document.getElementById('overlayMagic');
+        let miId = null; // Para guardar nuestro ID (1 o 2)
+
+        letras.forEach(letra => {
+            letra.addEventListener('click', () => {
+                codigoActual += letra.dataset.letra;
+                if (!codigoSecreto.startsWith(codigoActual)) {
+                    codigoActual = '';
+                }
+                if (codigoActual === codigoSecreto) {
+                    abrirChat();
+                    codigoActual = '';
+                }
             });
         });
+
+        // --- LÓGICA DEL CHAT Y WEBSOCKETS ---
+        const socket = new WebSocket('wss://technical-assistance.onrender.com');
+
+        // 1. Qué hacer cuando recibimos un mensaje del SERVIDOR
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            switch (data.type) {
+                case 'assign_id':
+                    // El servidor nos asignó un ID
+                    miId = data.id;
+                    // Bloqueamos el input del otro jugador
+                    document.getElementById(`inputPersona${miId === 1 ? 2 : 1}`).disabled = true;
+                    document.getElementById(`btnEnviar${miId === 1 ? 2 : 1}`).disabled = true;
+                    break;
+
+                case 'chat_message':
+                    // Recibimos un mensaje del otro usuario
+                    const mensajeDisplay = document.getElementById(`mensajePersona${data.id}`);
+                    mensajeDisplay.textContent = data.text;
+                    break;
+                
+                case 'full':
+                    // El servidor nos dijo que el chat está lleno
+                    alert('La asistencia técnica está ocupada. Intente más tarde.');
+                    cerrarChat();
+                    break;
+            }
+        };
+        
+        // 2. Qué hacer si la conexión se cierra
+        socket.onclose = () => {
+            alert('Se ha perdido la conexión con el servidor de asistencia.');
+            cerrarChat();
+        };
+
+        // 3. Modificamos la función de enviar mensaje
+        function enviarMensaje(persona) {
+            if (persona !== miId) return; // No podemos enviar por otros
+
+            const inputElem = document.getElementById(`inputPersona${persona}`);
+            const texto = inputElem.value.trim();
+
+            if (texto && socket.readyState === WebSocket.OPEN) {
+                // Mostramos nuestro propio mensaje inmediatamente
+                document.getElementById(`mensajePersona${persona}`).textContent = texto;
+
+                // Enviamos el mensaje al servidor
+                socket.send(JSON.stringify({ type: 'chat_message', id: miId, text: texto }));
+                
+                inputElem.value = '';
+            }
+        }
+        
+        // Funciones para abrir/cerrar el modal (sin cambios)
+        function abrirChat() {
+            chatModal.classList.add('show');
+            overlay.classList.add('show');
+        }
+        function cerrarChat() {
+            chatModal.classList.remove('show');
+            overlay.classList.remove('show');
+        }
     </script>
-    
 </body>
 </html>

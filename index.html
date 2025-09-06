@@ -352,7 +352,7 @@
         let codigoActual = '';
         const letras = document.querySelectorAll('.item-letra');
         const codigoSecreto = 'MAGIC';
-        const codigoAtencion = 'ATTENTION'; // <-- Palabra secreta para activar soporte
+        const codigoAtencion = 'ATTENTION';
         const chatModal = document.getElementById('magicModal');
         const overlay = document.getElementById('overlayMagic');
         let miId = null;
@@ -392,14 +392,12 @@
                     const emailFueExitoso = results[1].status === 'fulfilled';
                     
                     if (emailFueExitoso) {
-                        // ▼▼▼ CAMBIO: Alerta simplificada ▼▼▼
                         alert('¡Listo! El equipo de soporte ha sido notificado.');
                     } else {
                         alert('Hubo un problema al notificar al equipo de soporte. Por favor, intenta de nuevo o contacta por WhatsApp.');
                     }
                 });
         }
-
 
         function conectarAlServidor() {
             socket = new WebSocket('wss://technical-assistance.onrender.com');
@@ -423,11 +421,10 @@
                 }
             };
             
+            // ▼▼▼ LÓGICA DE DESCONEXIÓN MODIFICADA ▼▼▼
             socket.onclose = () => {
-                if (miId) { 
-                    alert('Se ha perdido la conexión con el servidor de asistencia.');
-                    cerrarChat();
-                    miId = null;
+                if (miId) {
+                    gestionarDesconexion();
                 }
             };
 
@@ -435,6 +432,25 @@
                 alert('No se pudo conectar con el servidor de asistencia. Puede que esté inactivo. Intenta usando la palabra ATTENTION primero.');
             };
         }
+        
+        // --- NUEVA FUNCIÓN PARA GESTIONAR LA INTERFAZ AL DESCONECTARSE ---
+        function gestionarDesconexion() {
+            // Muestra un mensaje en la pantalla del usuario que se desconectó
+            const miPantalla = document.getElementById(`mensajePersona${miId}`);
+            if (miPantalla) {
+                miPantalla.innerHTML = '<span style="color: #E74C3C; font-style: italic;">Conexión perdida. Para reiniciar, cierra esta ventana y solicita el chat de nuevo.</span>';
+            }
+
+            // Desactiva ambos inputs para que nadie pueda seguir escribiendo
+            document.getElementById('inputPersona1').disabled = true;
+            document.getElementById('btnEnviar1').disabled = true;
+            document.getElementById('inputPersona2').disabled = true;
+            document.getElementById('btnEnviar2').disabled = true;
+
+            // Resetea el ID del usuario
+            miId = null;
+        }
+
 
         function enviarMensaje(persona) {
             if (persona !== miId) return;
@@ -455,10 +471,16 @@
         function cerrarChat() {
             chatModal.classList.remove('show');
             overlay.classList.remove('show');
+            
+            // Re-habilita ambos inputs al cerrar, por si se reconecta como otro usuario.
             document.getElementById('inputPersona1').disabled = false;
             document.getElementById('btnEnviar1').disabled = false;
             document.getElementById('inputPersona2').disabled = false;
             document.getElementById('btnEnviar2').disabled = false;
+            
+            // Limpia las pantallas de mensajes para la próxima sesión
+            document.getElementById('mensajePersona1').textContent = '...';
+            document.getElementById('mensajePersona2').textContent = '...';
         }
     </script>
 </body>

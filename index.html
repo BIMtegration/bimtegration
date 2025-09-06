@@ -155,21 +155,21 @@
             text-align: center;
             margin: 0 0 25px 0;
             font-size: 1.8em;
-            font-weight: normal; /* Asegura que no haya estilos conflictivos */
-            border: none; /* Asegura que no haya estilos conflictivos */
-            display: block; /* Asegura que no haya estilos conflictivos */
+            font-weight: normal; 
+            border: none; 
+            display: block; 
         }
             
         .chat-container {
             display: flex;
             justify-content: space-between;
             gap: 20px;
-            flex-wrap: wrap; /* Para mejor responsividad en pantallas pequeñas */
+            flex-wrap: wrap; 
         }
 
         .chat-persona {
-            width: 100%; /* Ocupa todo el ancho en móvil */
-            min-width: 250px; /* Ancho mínimo */
+            width: 100%; 
+            min-width: 250px; 
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 10px;
@@ -177,7 +177,7 @@
 
         @media (min-width: 600px) {
             .chat-persona {
-                width: 48%; /* Vuelve a dos columnas en pantallas más grandes */
+                width: 48%; 
             }
         }
 
@@ -352,70 +352,78 @@
         let codigoActual = '';
         const letras = document.querySelectorAll('.item-letra');
         const codigoSecreto = 'MAGIC';
+        const codigoAtencion = 'ATTENTION'; // <-- Palabra secreta para activar soporte
         const chatModal = document.getElementById('magicModal');
         const overlay = document.getElementById('overlayMagic');
         let miId = null;
-
-        // 1. La variable 'socket' se declara vacía al inicio.
         let socket = null;
 
         letras.forEach(letra => {
             letra.addEventListener('click', () => {
-                // ▼▼▼ ¡AQUÍ ESTÁ EL CAMBIO! ▼▼▼
-                // Convierte la letra a mayúscula para que coincida con 'MAGIC'
-                codigoActual += letra.dataset.letra.toUpperCase();
+                const letraMayuscula = letra.dataset.letra.toUpperCase();
+                codigoActual += letraMayuscula;
                 
-                if (!codigoSecreto.startsWith(codigoActual)) {
+                if (!codigoSecreto.startsWith(codigoActual) && !codigoAtencion.startsWith(codigoActual)) {
                     codigoActual = '';
                 }
+
                 if (codigoActual === codigoSecreto) {
-                    // Cuando se escribe MAGIC, llamamos a la función para conectar.
                     if (!socket || socket.readyState === WebSocket.CLOSED) {
                         conectarAlServidor();
                     }
+                    codigoActual = '';
+                } 
+                else if (codigoActual === codigoAtencion) {
+                    solicitarSoporte();
                     codigoActual = '';
                 }
             });
         });
 
-        // 3. Toda la lógica de conexión ahora vive dentro de esta función.
+        function solicitarSoporte() {
+            const urlGoogleScript = 'https://script.google.com/macros/s/AKfycbwughVKyKLTpguV3fkyI-Z5QmWXu0XM0D97FJNoRjnWLvlj_AMz_y6yqAsySogYZzOLSA/exec';
+            const urlRenderService = 'https://technical-assistance.onrender.com';
+
+            const despertarRender = fetch(urlRenderService, { mode: 'no-cors' });
+            const notificarPorCorreo = fetch(urlGoogleScript);
+
+            Promise.allSettled([despertarRender, notificarPorCorreo])
+                .then(results => {
+                    const emailFueExitoso = results[1].status === 'fulfilled';
+                    
+                    if (emailFueExitoso) {
+                        // ▼▼▼ CAMBIO: Alerta simplificada ▼▼▼
+                        alert('¡Listo! El equipo de soporte ha sido notificado.');
+                    } else {
+                        alert('Hubo un problema al notificar al equipo de soporte. Por favor, intenta de nuevo o contacta por WhatsApp.');
+                    }
+                });
+        }
+
+
         function conectarAlServidor() {
-            // La conexión se crea aquí, no al cargar la página.
             socket = new WebSocket('wss://technical-assistance.onrender.com');
 
-            // Qué hacer cuando recibimos un mensaje del SERVIDOR
             socket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-
                 switch (data.type) {
                     case 'assign_id':
-                        // El servidor nos asignó un ID
                         miId = data.id;
-                        
-                        // 4. El chat SOLO se abre si el servidor nos da un lugar.
                         abrirChat(); 
-
-                        // Bloqueamos el input del otro jugador
                         document.getElementById(`inputPersona${miId === 1 ? 2 : 1}`).disabled = true;
                         document.getElementById(`btnEnviar${miId === 1 ? 2 : 1}`).disabled = true;
                         break;
-
                     case 'chat_message':
-                        // Recibimos un mensaje del otro usuario
                         const mensajeDisplay = document.getElementById(`mensajePersona${data.id}`);
                         mensajeDisplay.textContent = data.text;
                         break;
-                    
                     case 'full':
-                        // El servidor nos dijo que el chat está lleno
                         alert('La asistencia técnica está ocupada. Intente más tarde.');
                         break;
                 }
             };
             
-            // Qué hacer si la conexión se cierra
             socket.onclose = () => {
-                // Solo mostramos alerta si ya estábamos dentro del chat.
                 if (miId) { 
                     alert('Se ha perdido la conexión con el servidor de asistencia.');
                     cerrarChat();
@@ -424,17 +432,14 @@
             };
 
             socket.onerror = () => {
-                alert('No se pudo conectar con el servidor de asistencia.');
+                alert('No se pudo conectar con el servidor de asistencia. Puede que esté inactivo. Intenta usando la palabra ATTENTION primero.');
             };
         }
 
-        // Modificamos la función de enviar mensaje
         function enviarMensaje(persona) {
             if (persona !== miId) return;
-
             const inputElem = document.getElementById(`inputPersona${persona}`);
             const texto = inputElem.value.trim();
-
             if (texto && socket && socket.readyState === WebSocket.OPEN) {
                 document.getElementById(`mensajePersona${persona}`).textContent = texto;
                 socket.send(JSON.stringify({ type: 'chat_message', id: miId, text: texto }));
@@ -442,7 +447,6 @@
             }
         }
         
-        // Funciones para abrir/cerrar el modal
         function abrirChat() {
             chatModal.classList.add('show');
             overlay.classList.add('show');
@@ -451,7 +455,6 @@
         function cerrarChat() {
             chatModal.classList.remove('show');
             overlay.classList.remove('show');
-            // Re-habilita ambos inputs al cerrar, por si se reconecta como otro usuario.
             document.getElementById('inputPersona1').disabled = false;
             document.getElementById('btnEnviar1').disabled = false;
             document.getElementById('inputPersona2').disabled = false;

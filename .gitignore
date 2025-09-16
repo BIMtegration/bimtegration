@@ -1,0 +1,22 @@
+# Ignorar carpetas de backend temporales
+BACKEND SERVIDOR DE CORREO/
+BACKEND TECHNICAL-ASSISTANCE/
+
+# Ignorar dependencias y archivos de entorno
+node_modules/
+.env
+
+# Archivos de log
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.code-workspace
+
+# Otros
+dist/
+build/
